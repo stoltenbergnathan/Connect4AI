@@ -1,11 +1,20 @@
 import sys
+from qtable import Qtable
 from board import Board
+from rlagent import RLAgent
 
-gameBoard = Board()
+gameBoard = Board(None)
+Qtable1 = Qtable()
+agent1 = RLAgent(Qtable1, 1)
 
 # Change both player imputs to Agents
 def getPlayer1Input() -> int:
-    return int(input("Enter move (1): "))
+    # return int(input("Enter move (1): "))
+    pickedAction = agent1.selectAction(gameBoard, 1)
+    reward = agent1.getReward(gameBoard, pickedAction)
+    nextState = gameBoard.newState(1, pickedAction)
+    agent1.updateTable(gameBoard, reward, pickedAction, nextState)
+    return pickedAction
 
 def getPlayer2Input() -> int:
     return int(input("Enter move (2): "))

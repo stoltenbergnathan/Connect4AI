@@ -40,10 +40,3 @@ class Board():
             if (convolve2d(self.state == player, kernel, mode="valid") == 4).any():
                 return True
         return False
-
-
-b = Board()
-b.display()
-b.placeTile(1, 0)
-b.placeTile(2, 0)
-b.display()

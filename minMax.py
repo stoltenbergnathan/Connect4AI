@@ -9,10 +9,11 @@ EMPTY = 0
 P1 = 1
 P2 = 2
 
-MAX = 1
-MIN = 0
+MAX = True
+MIN = False
 
 DEPTH = 4
+INF = np.Infinity
 
 class MinMax():
   def __init__(self, strategy, player) -> None:
@@ -105,7 +106,7 @@ class MinMax():
   # function on enter, copies the board and begins the minMax algorithm
   def play(self, board):
     self.board = Board(board.state)
-    col, val = self.minMax(self.board, DEPTH, -np.Infinity, np.Infinity, True) # 0-6
+    col, val = self.minMax(self.board, DEPTH, -INF, INF, self.strat) # 0-6
     return col
     
   def minMax(self, board, depth, a, b, maxOpp):
@@ -119,7 +120,7 @@ class MinMax():
       return (None, self.getReward(board))
       
     if maxOpp:
-      score = -np.Infinity
+      score = -INF
       col = choice(validMoves)
       for c in validMoves:
         tempBoard = Board(board.state)
@@ -133,7 +134,7 @@ class MinMax():
           break
       return col, score
     else:
-      score = np.Infinity
+      score = INF
       col = choice(validMoves)
       for c in validMoves:
         tempBoard = Board(board.state)

@@ -65,23 +65,6 @@ class MinMax():
         reward += self.getStrat(section)
     
     return reward
-  
-  # pick best move possible
-  def pickMove(self, board):
-    moves = self.possibleMoves(board)
-    
-    rewardBest = -1000
-    colBest = 0
-
-    row = 0
-    for col in moves:
-      board.placeTile(self.player, col)
-      reward = self.getReward(board)
-      if reward > rewardBest:
-        rewardBest = reward
-        colBest = col
-    
-    return colBest
 
   # scores the current board section and returns a reward value based on that
   def getStrat(self, section):

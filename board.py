@@ -57,9 +57,8 @@ class Board():
     
     def full(self):
         return not 0 in self.state
-
-b = Board(None)
-b.placeTile(1, 0)
-b.placeTile(1, 1)
-b.placeTile(1, 2)
-print(b.connect3(1, 2, 5))
+    
+    def getHeight(self, column):
+        for row in range(len(self.state) - 1, -1, -1):
+            if self.state[row][column] == 0:
+                return row

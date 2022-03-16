@@ -4,14 +4,19 @@ import numpy as np
 from qtable import Qtable
 from board import Board
 from rlagent import RLAgent
+from minMax import MinMax
 
 gameBoard = Board(None)
+
 #Qtable1 = Qtable()
 Qtable2 = Qtable()
 #Qtable1.load("savedQ1.txt")
 Qtable2.load("savedQ2.txt")
 #agent1 = RLAgent(Qtable1, 1)
 agent2 = RLAgent(Qtable2, 2)
+
+agentMin = MinMax(0, 2)
+agentMax = MinMax(1, 2)
 
 def signalHandler(sig, frame):
     print("Saving states before exiting....")

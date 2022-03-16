@@ -37,7 +37,7 @@ class MinMax():
 
     middleArray = [int(i) for i in list(board.state[:, COL//2])]
     middleCount = middleArray.count(self.player)
-    reward += middleCount * 2
+    reward += middleCount * 3
 
     for row in range(ROW):
       rows = [int(i) for i in list(board.state[row, :])]
@@ -103,7 +103,7 @@ class MinMax():
   # function on enter, copies the board and begins the minMax algorithm
   def play(self, board):
     self.board = Board(board.state)
-    col, val = self.minMax(self.board, 6, -np.Infinity, np.Infinity, True) # 0-6
+    col, val = self.minMax(self.board, 5, -np.Infinity, np.Infinity, True) # 0-6
     return col
     
   def minMax(self, board, depth, a, b, maxOpp):

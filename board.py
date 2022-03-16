@@ -30,6 +30,7 @@ class Board():
                 elif col == 2:
                     print(colored('0', 'yellow'), end=" | ")
             print("\n-----------------------------")
+        print('  0   1   2   3   4   5   6')
     
     def placeTile(self, player, column):
         for row in range(len(self.state) - 1, -1, -1):

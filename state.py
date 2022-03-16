@@ -1,4 +1,3 @@
-from tkinter.messagebox import NO
 from board import Board
 
 class State():

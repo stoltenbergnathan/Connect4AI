@@ -11,13 +11,13 @@ gameBoard = Board(None)
 # Training
 # Qtable1 = Qtable()
 # Qtable2 = Qtable()
-# Qtable1.load("table/savedQ1.txt")
-# Qtable2.load("table/savedQ2.txt")
+# Qtable1.load("tables/savedQ1.txt")
+# Qtable2.load("tables/savedQ2.txt")
 # agent1 = RLAgent(Qtable1, 1)
 # agent2 = RLAgent(Qtable2, 2)
 
 Qt = Qtable()
-Qt.load('table/final.txt')
+Qt.load('tables/final.txt')
 
 agent = RLAgent(Qt, 2)
 
@@ -26,9 +26,9 @@ agentMax = MinMax(1, 2)
 
 def signalHandler(sig, frame):
     print("Saving states before exiting....")
-    # Qtable1.save("table/savedQ1.txt")
-    # Qtable2.save("table/savedQ2.txt")
-    Qt.save('table/final.txt')
+    # Qtable1.save("tables/savedQ1.txt")
+    # Qtable2.save("tables/savedQ2.txt")
+    Qt.save('tables/final.txt')
     sys.exit(0)
 
 signal.signal(signal.SIGINT, signalHandler)
@@ -83,6 +83,6 @@ if __name__ == "__main__":
     for iteration in range(1000000):
         print(f"----------{iteration}----------")
         playGame()
-    # Qtable1.save("table/savedQ1.txt")
-    # Qtable2.save("table/savedQ2.txt")
-    Qt.save('table/final.txt')
+    # Qtable1.save("tables/savedQ1.txt")
+    # Qtable2.save("tables/savedQ2.txt")
+    Qt.save('tables/final.txt')

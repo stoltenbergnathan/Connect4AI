@@ -12,6 +12,8 @@ P2 = 2
 MAX = 1
 MIN = 0
 
+DEPTH = 4
+
 class MinMax():
   def __init__(self, strategy, player) -> None:
     self.board = Board(None)
@@ -103,7 +105,7 @@ class MinMax():
   # function on enter, copies the board and begins the minMax algorithm
   def play(self, board):
     self.board = Board(board.state)
-    col, val = self.minMax(self.board, 6, -np.Infinity, np.Infinity, True) # 0-6
+    col, val = self.minMax(self.board, DEPTH, -np.Infinity, np.Infinity, True) # 0-6
     return col
     
   def minMax(self, board, depth, a, b, maxOpp):

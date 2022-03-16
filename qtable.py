@@ -1,7 +1,4 @@
-from os import stat
-from re import T
 import numpy as np
-from board import Board
 
 class Qtable():
     def __init__(self) -> None:
@@ -28,17 +25,24 @@ class Qtable():
     def initValue(self, state):
         self.table.append({"state": state, "actions": [0, 0, 0, 0, 0, 0, 0]})
         return {"state": state, "actions": [0, 0, 0, 0, 0, 0, 0]}
+
+    def newQState(self, state, actions):
+        self.table.append({"state": state, "actions": actions})
+    
+    def combineQ(self, state, actions):
+        for value in self.table:
+            if np.array_equal(state, value['state']):
+                # Merge values
+                for count, action in enumerate(value["actions"]):
+                    value["actions"][count] = max(action, actions[count])
+                return
+        self.newQState(state, actions)
     
     def save(self, filename):
         file = open(filename, "w")
         for line in self.table:
-            flattenedBoard = line["state"].flatten()
-            flattenedBoard = np.array2string(flattenedBoard).replace("\n", "")
-            file.write(f'{flattenedBoard}, {line["actions"][0]}, {line["actions"][1]}, {line["actions"][2]}, {line["actions"][3]}, {line["actions"][4]}, {line["actions"][5]}, {line["actions"][6]}\n')
+            file.write(f'{line["state"]},{line["actions"][0]},{line["actions"][1]},{line["actions"][2]},{line["actions"][3]},{line["actions"][4]},{line["actions"][5]},{line["actions"][6]}\n')
         file.close()
-    
-    def storeValues(self, state, values):
-        self.table.append({"state": state, "actions": [values[0], values[1], values[2], values[3], values[4], values[5], values[6]]})
 
     def load(self, filename):
         file = open(filename, "r")
@@ -46,8 +50,43 @@ class Qtable():
             line = file.readline().rstrip()
             if not line:
                 break
-            values = line.split(", ")
-            flatstr = values[0].replace("[", "").replace("]", "")
-            flat = np.fromstring(flatstr, dtype=int, sep=" ")
-            state = np.reshape(flat, (6, 7))
-            self.storeValues(state, [float(values[1]), float(values[2]), float(values[3]), float(values[4]), float(values[5]), float(values[6]), float(values[7])])
+            values = line.split(']')
+            state = []
+            rewards = []
+            for value in values[0].replace('[', '').split(','):
+                state.append(int(value))
+            for value in values[1].removeprefix(',').split(','):
+                rewards.append(float(value))        
+            self.newQState(state, rewards)
+        file.close()
+
+    def combine(self, file1, file2, outfile):
+        file1 = open(file1, "r")
+        file2 = open(file2, "r")
+        while True:
+            line = file1.readline().rstrip()
+            if not line:
+                break
+            values = line.split(']')
+            state = []
+            rewards = []
+            for value in values[0].replace('[', '').split(','):
+                state.append(int(value))
+            for value in values[1].removeprefix(',').split(','):
+                rewards.append(float(value))
+            self.combineQ(state, rewards)
+        file1.close()
+        while True:
+            line = file2.readline().rstrip()
+            if not line:
+                break
+            values = line.split(']')
+            state = []
+            rewards = []
+            for value in values[0].replace('[', '').split(','):
+                state.append(int(value))
+            for value in values[1].removeprefix(',').split(','):
+                rewards.append(float(value))
+            self.combineQ(state, rewards)
+        file2.close()
+        self.save(outfile)

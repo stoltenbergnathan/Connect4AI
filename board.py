@@ -10,11 +10,14 @@ diag1_kernel = np.eye(4, dtype=np.uint8)
 diag2_kernel = np.fliplr(diag1_kernel)
 detection_kernels = [horizontal_kernel, vertical_kernel, diag1_kernel, diag2_kernel]
 
+ROW = 6
+COL = 7
+
 class Board():
     # 6 tall 7 wide
     def __init__(self, state) -> None:
         if not np.any(state):
-            self.state = np.zeros((6, 7), dtype= int)
+            self.state = np.zeros((ROW, COL), dtype= int)
         else:
             self.state = np.copy(state)
     
@@ -44,9 +47,9 @@ class Board():
         for row in range(len(copyBoard) - 1, -1, -1):
             if copyBoard[row][column] == 0:
                 copyBoard[row][column] = player
-                return copyBoard
+                return Board(copyBoard)
         return None
-    
+
     def isWinner(self, player):
         for kernel in detection_kernels:
             if (convolve2d(self.state == player, kernel, mode="valid") == 4).any():
@@ -54,7 +57,12 @@ class Board():
         return False
 
     def clear(self):
-        self.state = np.zeros((6, 7), dtype= int)
+        self.state = np.zeros((ROW, COL), dtype= int)
     
     def full(self):
         return not 0 in self.state
+    
+    def getHeight(self, column):
+        for row in range(len(self.state) - 1, -1, -1):
+            if self.state[row][column] == 0:
+                return row

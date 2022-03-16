@@ -19,10 +19,15 @@ gameBoard = Board(None)
 Qt = Qtable()
 Qt.load('tables/final.txt')
 
-agent = RLAgent(Qt, 2)
+agent1 = RLAgent(Qt, 1)
+agent2 = RLAgent(Qt, 2)
 
 agentMin = MinMax(0, 2)
 agentMax = MinMax(1, 2)
+
+redWin = 0
+yellowWin = 0
+gamesPlayed = 0
 
 def signalHandler(sig, frame):
     print("Saving states before exiting....")
@@ -43,12 +48,16 @@ def getPlayer1Input() -> int:
 
 def getPlayer2Input() -> int:
     # return int(input("Enter move (2): "))
-    # return agent1.play(gameBoard)
+    return agent2.play(gameBoard)
     # return agentMin.play(gameBoard)
-    return agent.play(gameBoard)
     # return agentMax.play(gameBoard)
 
 def winnerMessage(winner):
+    global gamesPlayed, redWin, yellowWin
+    gamesPlayed += 1
+    if winner == "red": redWin += 1
+    else: yellowWin += 1
+
     print(f"{winner} won!")
 
 def playGame():
@@ -63,7 +72,7 @@ def playGame():
         if gameBoard.full():
             winnerMessage("Tie")
             break
-        gameBoard.display()
+        # gameBoard.display()
     
         player2move = getPlayer2Input()
         if gameBoard.placeTile(2, player2move) == [-1, -1]:
@@ -74,15 +83,18 @@ def playGame():
         if gameBoard.full():
             winnerMessage("Tie")
             break
-        gameBoard.display()
+        # gameBoard.display()
 
     gameBoard.display()
     gameBoard.clear()
 
 if __name__ == "__main__":
-    for iteration in range(1000000):
+    # 100 test games for results
+    for iteration in range(100):
         print(f"----------{iteration}----------")
         playGame()
     # Qtable1.save("tables/savedQ1.txt")
     # Qtable2.save("tables/savedQ2.txt")
     Qt.save('tables/final.txt')
+
+    print(f'Red: {redWin}\nYellow: {yellowWin}\nGames: {gamesPlayed}\nRed Ratio: {redWin / gamesPlayed}\nYellow Ratio: {yellowWin / gamesPlayed}')

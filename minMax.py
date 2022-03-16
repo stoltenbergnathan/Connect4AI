@@ -12,7 +12,7 @@ P2 = 2
 MAX = True
 MIN = False
 
-DEPTH = 4
+DEPTH = 6
 INF = np.Infinity
 
 class MinMax():
@@ -77,12 +77,12 @@ class MinMax():
     if section.count(self.player) == 4:
       score += 100
     elif section.count(self.player) == 3 and section.count(EMPTY) == 1:
-      score += 5
+      score += 9
     elif section.count(self.player) == 2 and section.count(EMPTY) == 2:
-      score += 2
+      score += 5
 
     if section.count(opponent) == 3 and section.count(EMPTY) == 1:
-      score -= 99
+      score -= 7
       
     return score
       

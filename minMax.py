@@ -14,7 +14,7 @@ MIN = 0
 
 class MinMax():
   def __init__(self, strategy, player) -> None:
-    self.board = None
+    self.board = Board(None)
     self.player = player
     if strategy:
       self.strat = MAX
@@ -23,10 +23,10 @@ class MinMax():
     return
   
   # returns a list of all possible column moves
-  def possibleMoves(self):
+  def possibleMoves(self, board):
     moves = []
     for col in range(COL):
-      if self.board[ROW - 1][col]:
+      if board.state[0][col] == 0:
         moves.append(col)
 
     return moves
@@ -35,44 +35,43 @@ class MinMax():
   def getReward(self, board):
     reward = 0
 
-    middleArray = [int(i) for i in list(board[:, COL//2])]
+    middleArray = [int(i) for i in list(board.state[:, COL//2])]
     middleCount = middleArray.count(self.player)
     reward += middleCount * 2
 
     for row in range(ROW):
-      rows = [int(i) for i in list(board[row, :])]
+      rows = [int(i) for i in list(board.state[row, :])]
       for col in range(COL - 3):
         section = rows[col:col + 4]
         reward += self.getStrat(section)
     
     for col in range(COL):
-      cols = [int(i) for i in list(board[:, col])]
+      cols = [int(i) for i in list(board.state[:, col])]
       for row in range(ROW - 3):
         section = cols[row:row + 4]
         reward += self.getStrat(section)
     
-    for row in range(ROW):
+    for row in range(ROW - 3):
       for col in range(COL - 3):
-        section = [board[row + i][col + i] for i in range(4)]
+        section = [board.state[row + i][col + i] for i in range(4)]
         reward += self.getStrat(section)
 
-    for col in range(COL):
+    for col in range(COL - 3):
       for row in range(ROW - 3):
-        section = [board[row + 3 - i][col + i] for i in range(4)]
+        section = [board.state[row + 3 - i][col + i] for i in range(4)]
         reward += self.getStrat(section)
     
     return reward
   
   # pick best move possible
-  def pickMove(self):
-    moves = self.possibleMoves()
+  def pickMove(self, board):
+    moves = self.possibleMoves(board)
     
-    rewardBest = -np.Infinity
+    rewardBest = -1000
     colBest = 0
 
     row = 0
     for col in moves:
-      board = Board(self.board)
       board.placeTile(self.player, col)
       reward = self.getReward(board)
       if reward > rewardBest:
@@ -84,66 +83,66 @@ class MinMax():
   # scores the current board section and returns a reward value based on that
   def getStrat(self, section):
     score = 0
+
     opponent = P1
     if self.player == P1:
       opponent = P2
+
     if section.count(self.player) == 4:
-      score += 50
-    if section.count(self.player) == 3 and section.count(EMPTY) == 1:
-      score += 10
-    if section.count(self.player) == 2 and section.count(EMPTY) == 2:
-      score += 3
+      score += 100
+    elif section.count(self.player) == 3 and section.count(EMPTY) == 1:
+      score += 5
+    elif section.count(self.player) == 2 and section.count(EMPTY) == 2:
+      score += 2
+
     if section.count(opponent) == 3 and section.count(EMPTY) == 1:
-      score -= 6
+      score -= 99
+      
     return score
       
   # function on enter, copies the board and begins the minMax algorithm
   def play(self, board):
-    self.board = board
-    col, val = self.minMax(self.board, 4, -np.Infinity, np.Infinity) # 0-6
+    self.board = Board(board.state)
+    col, val = self.minMax(self.board, 6, -np.Infinity, np.Infinity, True) # 0-6
     return col
     
-  def minMax(self, board, depth, a, b):
-    validMoves = self.possibleMoves()
+  def minMax(self, board, depth, a, b, maxOpp):
+    validMoves = self.possibleMoves(board)
     
     opponent = P1
     if self.player == P1:
       opponent = P2
+
+    if depth == 0:
+      return (None, self.getReward(board))
       
-    if board.isWinner(self.player):
-      return(None, 1000000)
-    elif board.isWinner(opponent):
-      return(None, -1000000)
-    elif self.board.full():
-      return(None, 0)
-      
-    if self.strat == MAX:
+    if maxOpp:
       score = -np.Infinity
-      col = random.choice(validMoves)
+      col = choice(validMoves)
       for c in validMoves:
-        tempBoard = board.copy()
-        self.board.placeTile(self.player, c)
-        newScore = self.minMax(tempBoard, depth-1, a, b)[1]
+        tempBoard = Board(board.state)
+        tempBoard.placeTile(self.player, c)
+        column, newScore = self.minMax(tempBoard, depth-1, a, b, False)
         if newScore > score:
           score = newScore
           col = c
-        b = max(b, score)
+        a = max(a, score)
         if a >= b:
           break
-        return col, score
+      return col, score
     else:
       score = np.Infinity
-      col = random.choice(validMoves)
+      col = choice(validMoves)
       for c in validMoves:
-        tempBoard = board.copy()
-        self.board.placeTile(self.player, c)
-        newScore = self.minMax(tempBoard, depth-1, a, b)[1]
+        tempBoard = Board(board.state)
+        tempBoard.placeTile(opponent, c)
+        column, newScore = self.minMax(tempBoard, depth-1, a, b, True)
         if newScore < score:
           score = newScore
           col = c
         b = min(b, score)
         if a >= b:
           break
-        return col, score      
+      return col, score      
 
         

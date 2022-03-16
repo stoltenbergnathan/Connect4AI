@@ -16,7 +16,7 @@ class Board():
         if not np.any(state):
             self.state = np.zeros((6, 7), dtype= int)
         else:
-            self.state = state
+            self.state = np.copy(state)
     
     def display(self):
         print("-----------------------------")
@@ -45,7 +45,7 @@ class Board():
                 copyBoard[row][column] = player
                 return copyBoard
         return None
-
+    
     def isWinner(self, player):
         for kernel in detection_kernels:
             if (convolve2d(self.state == player, kernel, mode="valid") == 4).any():
@@ -57,9 +57,3 @@ class Board():
     
     def full(self):
         return not 0 in self.state
-
-b = Board(None)
-b.placeTile(1, 0)
-b.placeTile(1, 1)
-b.placeTile(1, 2)
-print(b.connect3(1, 2, 5))

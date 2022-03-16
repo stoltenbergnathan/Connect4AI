@@ -12,8 +12,11 @@ detection_kernels = [horizontal_kernel, vertical_kernel, diag1_kernel, diag2_ker
 
 class Board():
     # 6 tall 7 wide
-    def __init__(self) -> None:
-        self.state = np.zeros((6, 7), dtype= int)
+    def __init__(self, state) -> None:
+        if not np.any(state):
+            self.state = np.zeros((6, 7), dtype= int)
+        else:
+            self.state = np.copy(state)
     
     def display(self):
         print("-----------------------------")
@@ -27,16 +30,31 @@ class Board():
                 elif col == 2:
                     print(colored('0', 'yellow'), end=" | ")
             print("\n-----------------------------")
+        print('  0   1   2   3   4   5   6')
     
     def placeTile(self, player, column):
         for row in range(len(self.state) - 1, -1, -1):
             if self.state[row][column] == 0:
                 self.state[row][column] = player
                 return [row, column]
-        return [-1, -1]
+        return None
 
+    def newState(self, player, column) -> np.ndarray:
+        copyBoard = np.copy(self.state)
+        for row in range(len(copyBoard) - 1, -1, -1):
+            if copyBoard[row][column] == 0:
+                copyBoard[row][column] = player
+                return copyBoard
+        return None
+    
     def isWinner(self, player):
         for kernel in detection_kernels:
             if (convolve2d(self.state == player, kernel, mode="valid") == 4).any():
                 return True
         return False
+
+    def clear(self):
+        self.state = np.zeros((6, 7), dtype= int)
+    
+    def full(self):
+        return not 0 in self.state

@@ -25,6 +25,18 @@ class Qtable():
     def initValue(self, state):
         self.table.append({"state": state, "actions": [0, 0, 0, 0, 0, 0, 0]})
         return {"state": state, "actions": [0, 0, 0, 0, 0, 0, 0]}
+
+    def newQState(self, state, actions):
+        self.table.append({"state": state, "actions": actions})
+    
+    def combineQ(self, state, actions):
+        for value in self.table:
+            if np.array_equal(state, value['state']):
+                # Merge values
+                for count, action in enumerate(value["actions"]):
+                    value["actions"][count] = max(action, actions[count])
+                return
+        self.newQState(state, actions)
     
     def save(self, filename):
         file = open(filename, "w")
@@ -33,4 +45,48 @@ class Qtable():
         file.close()
 
     def load(self, filename):
-        pass
+        file = open(filename, "r")
+        while True:
+            line = file.readline().rstrip()
+            if not line:
+                break
+            values = line.split(']')
+            state = []
+            rewards = []
+            for value in values[0].replace('[', '').split(','):
+                state.append(int(value))
+            for value in values[1].removeprefix(',').split(','):
+                rewards.append(float(value))        
+            self.newQState(state, rewards)
+        file.close()
+
+    def combine(self, file1, file2, outfile):
+        file1 = open(file1, "r")
+        file2 = open(file2, "r")
+        while True:
+            line = file1.readline().rstrip()
+            if not line:
+                break
+            values = line.split(']')
+            state = []
+            rewards = []
+            for value in values[0].replace('[', '').split(','):
+                state.append(int(value))
+            for value in values[1].removeprefix(',').split(','):
+                rewards.append(float(value))
+            self.combineQ(state, rewards)
+        file1.close()
+        while True:
+            line = file2.readline().rstrip()
+            if not line:
+                break
+            values = line.split(']')
+            state = []
+            rewards = []
+            for value in values[0].replace('[', '').split(','):
+                state.append(int(value))
+            for value in values[1].removeprefix(',').split(','):
+                rewards.append(float(value))
+            self.combineQ(state, rewards)
+        file2.close()
+        self.save(outfile)

@@ -23,18 +23,12 @@ class RLAgent():
                 bestOptions.append(i)
         return choice(bestOptions)
 
-    def getReward(self, state: Board, action) -> int:
+    def getReward(self, state: State) -> int:
         # 100 for 4 in a row
-        # 50 for blocking opponent
+        # opponent = 2 if self.player == 1 else 1
 
-        opponent = 2 if self.player == 1 else 1
-        updatedState = Board(state.newState(self.player, action))
-        blockState = Board(state.newState(opponent, action))
-
-        if updatedState.isWinner(self.player):
+        if state.winner():
             return 100
-        if blockState.isWinner(opponent):
-            return 50
         return 0
 
     def updateTable(self, state, reward, action, newState) -> None:
@@ -49,15 +43,12 @@ class RLAgent():
         self.table.setValue(state.state, action, newQ)
     
     def play(self, board: Board) -> int:
-        nextStatet = None
-        state = State()
-        state.setState(board)
-        while not np.any(nextStatet):
+        nextBoard = None
+        state = State(board, self.player)
+        while not np.any(nextBoard):
             pickedAction = self.selectAction(state, 10)
-            nextStatet = board.newState(1, pickedAction)
-            nextStatet = Board(nextStatet)
-        nextState = State()
-        nextState.setState(nextStatet)
-        reward = self.getReward(board, pickedAction)
+            nextBoard = board.newState(1, pickedAction)
+        nextState = State(nextBoard, self.player)
+        reward = self.getReward(nextState)
         self.updateTable(state, reward, pickedAction, nextState)
         return pickedAction

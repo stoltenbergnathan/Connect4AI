@@ -43,7 +43,7 @@ class Board():
         for row in range(len(copyBoard) - 1, -1, -1):
             if copyBoard[row][column] == 0:
                 copyBoard[row][column] = player
-                return copyBoard
+                return Board(copyBoard)
         return None
 
     def isWinner(self, player):

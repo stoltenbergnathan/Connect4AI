@@ -2,8 +2,10 @@ from tkinter.messagebox import NO
 from board import Board
 
 class State():
-    def __init__(self) -> None:
-        self.state = [[0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0]]
+    def __init__(self, board, player) -> None:
+        self.state = [0, 0, 0, 0, 0, 0, 0]
+        self.player = player
+        self.setState(board)
     
     def getValueCol(self, col) -> list:
         return self.state[col]
@@ -13,7 +15,13 @@ class State():
             row = board.getHeight(col)
             if row == None:
                 row = 0
-            self.state[col] = [self.getOne(board.state, row, col, 1), self.getOne(board.state, row, col, 2)]
+            self.state[col] = self.getOne(board.state, row, col, self.player)
+    
+    def winner(self):
+        for value in self.state:
+            if value == 4:
+                return True
+        return False
     
     def getOne(self, board, row, col, player):
         total = 0
@@ -24,6 +32,8 @@ class State():
                 break
             if board[row][col + addition] == player:
                 total += 1
+                if total >= 4:
+                    return total
                 addition += 1
             else:
                 break
@@ -34,6 +44,8 @@ class State():
                 break
             if board[row][col - addition] == player:
                 total += 1
+                if total >= 4:
+                    return total
                 addition += 1
             else:
                 break
@@ -45,6 +57,8 @@ class State():
                 break
             if board[row - addition][col + addition] == player:
                 total += 1
+                if total >= 4:
+                    return total
                 addition += 1
             else:
                 break
@@ -55,6 +69,8 @@ class State():
                 break
             if board[row - addition][col - addition] == player:
                 total += 1
+                if total >= 4:
+                    return total
                 addition += 1
             else:
                 break
@@ -66,6 +82,8 @@ class State():
                 break
             if board[row + addition][col + addition] == player:
                 total += 1
+                if total >= 4:
+                    return total
                 addition += 1
             else:
                 break
@@ -76,6 +94,8 @@ class State():
                 break
             if board[row - addition][col - addition] == player:
                 total += 1
+                if total >= 4:
+                    return total
                 addition += 1
             else:
                 break
@@ -86,6 +106,8 @@ class State():
                 break
             if board[row + addition][col] == player:
                 total += 1
+                if total >= 4:
+                    return total
                 addition += 1
             else:
                 break

@@ -36,18 +36,30 @@ class Board():
             if self.state[row][column] == 0:
                 self.state[row][column] = player
                 return [row, column]
-        return [-1, -1]
+        return None
 
     def newState(self, player, column) -> np.ndarray:
-        copyBoard = np.zeros((6, 7), dtype= int)
+        copyBoard = np.copy(self.state)
         for row in range(len(copyBoard) - 1, -1, -1):
             if copyBoard[row][column] == 0:
                 copyBoard[row][column] = player
                 return copyBoard
-        return [-1, -1]
+        return None
 
     def isWinner(self, player):
         for kernel in detection_kernels:
             if (convolve2d(self.state == player, kernel, mode="valid") == 4).any():
                 return True
         return False
+
+    def clear(self):
+        self.state = np.zeros((6, 7), dtype= int)
+    
+    def full(self):
+        return not 0 in self.state
+
+b = Board(None)
+b.placeTile(1, 0)
+b.placeTile(1, 1)
+b.placeTile(1, 2)
+print(b.connect3(1, 2, 5))
